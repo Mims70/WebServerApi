@@ -5,10 +5,13 @@ const weatherService = require('../services/weatherService');
 
 router.get('/hello', async (req, res) => {
     const visitor_name = req.query.visitor_name;
-    const client_ip = req.ip;
+    const client_ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+    console.log(`Client IP: ${client_ip}`); // Debugging IP detection
 
     try {
         const city = await locationService.getCityByIP(client_ip);
+        console.log(`Detected City: ${city}`); // Debugging city detection
         const temperature = await weatherService.getTemperatureByCity(city);
 
         res.json({
